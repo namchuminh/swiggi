@@ -73,25 +73,26 @@ class UserController {
   // [PUT] /users
   async update(req, res) {
     try {
-      const { fullname, address, phone, email, username, password, role, status } = req.body;
+      const { fullname, address, phone, email, password } = req.body;
 
       // Validate các trường
-      if (!fullname || !email || !username) {
-        return res.status(400).json({ message: 'Họ tên, email và tên người dùng là bắt buộc.' });
+      if (!fullname || !email || !address || !phone ) {
+        return res.status(400).json({ message: 'Họ tên, email, địa chỉ và số điện thoại là bắt buộc.' });
       }
 
-      const user = await User.findById(req.params.id);
+      const user = await User.findById(req.user.userId);
       if (!user) {
         return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+      }
+
+      // Kiểm tra trùng lặp số điện thoại (nếu có thay đổi)
+      if (phone !== user.phone && await User.findOne({ phone })) {
+        return res.status(400).json({ message: 'Số điện thoại đã được sử dụng.' });
       }
 
       // Kiểm tra trùng lặp email và username (nếu có thay đổi)
       if (email !== user.email && await User.findOne({ email })) {
         return res.status(400).json({ message: 'Email đã được sử dụng.' });
-      }
-
-      if (username !== user.username && await User.findOne({ username })) {
-        return res.status(400).json({ message: 'Tên người dùng đã được sử dụng.' });
       }
 
       // Mã hóa mật khẩu nếu có thay đổi
@@ -101,7 +102,7 @@ class UserController {
       }
 
       // Cập nhật thông tin người dùng
-      const updatedUser = await User.findByIdAndUpdate(req.params.id, { fullname, address, phone, email, username, password: hashedPassword, role, status }, { new: true });
+      const updatedUser = await User.findByIdAndUpdate(req.user.userId, { fullname, address, phone, email, password: hashedPassword }, { new: true });
       if (!updatedUser) {
         return res.status(404).json({ message: 'Không tìm thấy người dùng' });
       }
