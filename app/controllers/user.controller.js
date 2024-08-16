@@ -23,6 +23,8 @@ class UserController {
         queryCondition.username = new RegExp(username, 'i'); // Tìm kiếm không phân biệt chữ hoa chữ thường
       }
 
+      queryCondition.role = "customer";
+
       const users = await User.find(queryCondition)
         .limit(limitNum)
         .skip((pageNum - 1) * limitNum)
@@ -56,8 +58,16 @@ class UserController {
     }
   }
 
-  async profile(){
-
+  async profile(req, res){
+    try {
+      const user = await User.findById(req.user.userId);
+      if (!user) {
+        return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+      }
+      return res.json(user);
+    } catch (error) {
+      return res.status(500).json({ message: 'Lỗi khi truy xuất người dùng', error });
+    }
   }
 
   // [PUT] /users
