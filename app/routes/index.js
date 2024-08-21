@@ -14,6 +14,9 @@ function route(app){
     app.use("/coupons", couponRoute);
     app.use("/users", userRoute);
     app.use("/", authRoute);
+    app.use("/", (req, res) => {
+        return res.status(200).json({ message: 'Trang chủ API' });
+    });
 }
 
 module.exports = route

@@ -9,7 +9,7 @@ function authenticateToken(req, res, next) {
   if (token == null) return res.status(401).json({ message: 'Yêu cầu đăng nhập.' });
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: 'Token không hợp lệ.' });
+    if (err) return res.status(401).json({ message: 'Token không hợp lệ.' });
     req.user = user;
     next();
   });
