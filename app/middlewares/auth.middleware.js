@@ -18,9 +18,17 @@ function authenticateToken(req, res, next) {
 // Middleware để kiểm tra vai trò admin
 function requireAdmin(req, res, next) {
   if (req.user.role !== 'admin') {
-    return res.status(403).json({ message: 'Bạn không có quyền truy cập.' });
+    return res.status(403).json({ message: 'Vui lòng đăng nhập tài khoản quản lý để thực hiện.' });
   }
   next();
 }
 
-module.exports = { authenticateToken, requireAdmin };
+// Middleware để kiểm tra vai trò admin
+function requireCustomer(req, res, next) {
+  if (req.user.role !== 'customer') {
+    return res.status(403).json({ message: 'Vui lòng đăng nhập tài khoản "Khách hàng" để thực hiện.' });
+  }
+  next();
+}
+
+module.exports = { authenticateToken, requireAdmin, requireCustomer };
