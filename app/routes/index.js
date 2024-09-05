@@ -6,6 +6,7 @@ const couponRoute = require("./coupon.routes.js");
 const userRoute = require("./user.routes.js");
 const authRoute = require("./auth.routes.js")
 const configRoute = require("./config.routes.js")
+const bannerRoute = require("./banner.routes.js")
 
 function route(app){
     app.use("/categories", categoryRoute);
@@ -15,6 +16,7 @@ function route(app){
     app.use("/coupons", couponRoute);
     app.use("/users", userRoute);
     app.use("/configs", configRoute);
+    app.use("/banners", bannerRoute);
     app.use("/", authRoute);
     app.use("/", (req, res) => {
         return res.status(200).json({ message: 'Trang chủ API 111' });
