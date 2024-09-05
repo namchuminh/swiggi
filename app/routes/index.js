@@ -8,6 +8,7 @@ const authRoute = require("./auth.routes.js")
 const configRoute = require("./config.routes.js")
 const bannerRoute = require("./banner.routes.js")
 const contactRoute = require("./contact.routes.js")
+const provinceRoute = require("./province.routes.js")
 
 function route(app){
     app.use("/categories", categoryRoute);
@@ -19,6 +20,7 @@ function route(app){
     app.use("/configs", configRoute);
     app.use("/banners", bannerRoute);
     app.use("/contacts", contactRoute);
+    app.use("/provinces", provinceRoute);
     app.use("/", authRoute);
     app.use("/", (req, res) => {
         return res.status(200).json({ message: 'Trang chủ API 111' });
