@@ -11,11 +11,11 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
-// CORS Configuration
-const corsOptions = {
-  origin: "http://localhost:3000",
-};
-app.use(cors(corsOptions));
+// // CORS Configuration
+// const corsOptions = {
+//   origin: "http://localhost:3000",
+// };
+app.use(cors());
 
 // Middleware to parse JSON and URL-encoded data
 app.use(express.json());
