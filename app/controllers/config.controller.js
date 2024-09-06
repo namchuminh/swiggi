@@ -1,6 +1,7 @@
 const Config = require('../models/config.model.js');
 const path = require('path');
 const fs = require('fs');
+require('dotenv').config();
 
 class ConfigController {
   //[GET] /configs
@@ -45,7 +46,7 @@ class ConfigController {
             fs.unlinkSync(path.join('uploads', logoFile.filename));
             return res.status(400).json({ message: 'Tệp logo quá lớn.' });
           }
-          req.body.logo = `${req.protocol}://${req.get('host')}/uploads/${logoFile.filename}`;
+          req.body.logo = `${process.env.BASE_API}/uploads/${logoFile.filename}`;
         }
 
         if (faviconFile) {
@@ -59,7 +60,7 @@ class ConfigController {
             fs.unlinkSync(path.join('uploads', faviconFile.filename));
             return res.status(400).json({ message: 'Tệp favicon quá lớn.' });
           }
-          req.body.favicon = `${req.protocol}://${req.get('host')}/uploads/${faviconFile.filename}`;
+          req.body.favicon = `${process.env.BASE_API}/uploads/${faviconFile.filename}`;
         }
       }
 

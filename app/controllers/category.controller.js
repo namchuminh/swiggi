@@ -1,6 +1,7 @@
 const Category = require("../models/category.model.js");
 const path = require('path');
 const fs = require('fs');
+require('dotenv').config();
 
 class CategoryController {
   //[GET] /categories
@@ -92,7 +93,7 @@ class CategoryController {
         }
 
         // Construct the full URL for the image
-        const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${imageFile.filename}`;
+        const imageUrl = `${process.env.BASE_API}/uploads/${imageFile.filename}`;
         req.body.image = imageUrl;
       } else {
         return res.status(400).json({ message: 'Vui lòng chọn ảnh chuyên mục' });
@@ -135,7 +136,7 @@ class CategoryController {
         }
 
         // Construct the full URL for the image
-        const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${imageFile.filename}`;
+        const imageUrl = `${process.env.BASE_API}/uploads/${imageFile.filename}`;
         req.body.image = imageUrl;
       }
 

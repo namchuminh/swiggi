@@ -1,6 +1,7 @@
 const Food = require("../models/food.model.js");
 const path = require('path');
 const fs = require('fs');
+require('dotenv').config();
 
 class FoodController {
   // [GET] /foods
@@ -90,7 +91,7 @@ class FoodController {
         }
 
         // Construct the full URL for the image
-        const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${imageFile.filename}`;
+        const imageUrl = `${process.env.BASE_API}/uploads/${imageFile.filename}`;
         req.body.image = imageUrl;
       }else{
         return res.status(400).json({ message: 'Vui lòng chọn ảnh món ăn' });
@@ -137,7 +138,7 @@ class FoodController {
           return res.status(400).json({ message: 'Tệp hình ảnh quá lớn. Vui lòng chọn tệp nhỏ hơn 5MB.' });
         }
 
-        const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${imageFile.filename}`;
+        const imageUrl = `${process.env.BASE_API}/uploads/${imageFile.filename}`;
         req.body.image = imageUrl;
       }
 
