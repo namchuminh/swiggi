@@ -1,4 +1,5 @@
 const Category = require("../models/category.model.js");
+const Food = require("../models/food.model.js");
 const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
@@ -177,6 +178,56 @@ class CategoryController {
       return res.json({ message: 'Xóa danh mục thành công' });
     } catch (error) {
       return res.status(500).json({ message: 'Lỗi khi xóa danh mục', error });
+    }
+  }
+
+  //[GET] /categories/:id/foods
+  async getFoodByCategory(req, res) {
+    try {
+      const { page = 1, limit = 10 } = req.query;
+  
+      // Kiểm tra và xử lý các giá trị của query parameters
+      const pageNum = parseInt(page);
+      const limitNum = parseInt(limit);
+  
+      // Validate page và limit phải là số nguyên dương
+      if (isNaN(pageNum) || pageNum < 1) {
+        return res.status(400).json({ message: 'Trang phải là số nguyên dương' });
+      }
+      if (isNaN(limitNum) || limitNum < 1) {
+        return res.status(400).json({ message: 'Giới hạn phải là số nguyên dương' });
+      }
+  
+      // Tìm Category bằng ID
+      const category = await Category.findById(req.params.id);
+      if (!category) {
+        return res.status(404).json({ message: 'Không tìm thấy danh mục' });
+      }
+  
+      // Lấy tổng số món ăn trong danh mục
+      const totalFoods = await Food.countDocuments({ category: category._id });
+  
+      // Lấy danh sách món ăn liên quan đến Category với phân trang
+      const foods = await Food.find({ category: category._id })
+        .limit(limitNum)
+        .skip((pageNum - 1) * limitNum)
+        .exec();
+  
+      // Tính tổng số trang
+      const totalPages = Math.ceil(totalFoods / limitNum);
+  
+      // Kết quả trả về
+      const result = {
+        foods,
+        totalPages,
+        currentPage: pageNum,
+        next: pageNum < totalPages ? `/categories/${category._id}/foods?page=${pageNum + 1}&limit=${limitNum}` : null,
+        prev: pageNum > 1 ? `/categories/${category._id}/foods?page=${pageNum - 1}&limit=${limitNum}` : null
+      };
+  
+      return res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json({ message: 'Lỗi khi lấy danh sách món ăn', error });
     }
   }
 }

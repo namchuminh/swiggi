@@ -6,6 +6,7 @@ const { authenticateToken, requireAdmin } = require('../middlewares/auth.middlew
 router.delete('/:id', authenticateToken, requireAdmin, categoryController.delete);
 router.put('/:id', authenticateToken, requireAdmin, categoryController.update);
 router.get('/:id', categoryController.show);
+router.get('/:id/foods', categoryController.getFoodByCategory);
 router.post('/', authenticateToken, requireAdmin, categoryController.create);
 router.get('/', categoryController.index);
 
