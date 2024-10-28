@@ -34,7 +34,7 @@ class OrderController {
             // Thêm giá trị mặc định nếu không có coupon
             const formattedOrders = orders.map(order => ({
                 ...order.toObject(),
-                coupon_id: order.coupon_id ? order.coupon_id.value : 'Không sử dụng'
+                coupon: order.coupon ? order.coupon : 'Không sử dụng'
             }));
 
             return res.json({
@@ -97,7 +97,7 @@ class OrderController {
                 address,
                 phone,
                 amount: totalAmount,
-                coupon: couponCheck ? couponCheck.userId : null,  // Lưu coupon nếu có
+                coupon: couponCheck ? couponCheck._id : null,  // Lưu coupon nếu có
                 status: 'Pending'  // Trạng thái đơn hàng
             });
 
