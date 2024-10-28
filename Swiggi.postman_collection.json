@@ -158,6 +158,29 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "ListFoodByCategory",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "127.0.0.1:3001/categories/66bce3edc2b366176f8f7d64/foods",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"categories",
+								"66bce3edc2b366176f8f7d64",
+								"foods"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -895,7 +918,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmJkZTJhY2UyNzZmMDlkZmM4Y2E2ODMiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjM3OTg0OTMsImV4cCI6MTcyMzgwMjA5M30.awIXak5qQEZ6IMgkxbpCXo254gf30mxoLYHOqI-koro",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmMzNDdmYmM1M2UyZDI0MzlmYjg4NjEiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MjkzMzk5NDQsImV4cCI6MTcyOTM0MzU0NH0.M8TptzBwc4rgZYdm_oEhQTEWJyMe93z0XaNDOLE6bvY",
 									"type": "string"
 								}
 							]
@@ -917,12 +940,12 @@
 								},
 								{
 									"key": "phone",
-									"value": "0555666778",
+									"value": "0555666779",
 									"type": "text"
 								},
 								{
 									"key": "email",
-									"value": "nguyenvana@gmail.com",
+									"value": "nguyenvanabc@gmail.com",
 									"type": "text"
 								},
 								{
@@ -1756,7 +1779,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmJkZTJmMGUyNzZmMDlkZmM4Y2E2OGUiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MjYzOTA4NjksImV4cCI6MTcyNjM5NDQ2OX0.A2EvcKCokVM_3MDISA3txG8au9Dni8DHo-7uGML5dKI",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmMzNDdmYmM1M2UyZDI0MzlmYjg4NjEiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MzAxMjY5ODQsImV4cCI6MTczMDEzMDU4NH0.0VpcNb83YLYtFGR1ly6aLCmcq_mI2KVmdGznMoRs3k8",
 									"type": "string"
 								}
 							]
@@ -1788,7 +1811,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmJkZTJmMGUyNzZmMDlkZmM4Y2E2OGUiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MjYzOTA4NjksImV4cCI6MTcyNjM5NDQ2OX0.A2EvcKCokVM_3MDISA3txG8au9Dni8DHo-7uGML5dKI",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmMzNDdmYmM1M2UyZDI0MzlmYjg4NjEiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MzAxMjY5ODQsImV4cCI6MTczMDEzMDU4NH0.0VpcNb83YLYtFGR1ly6aLCmcq_mI2KVmdGznMoRs3k8",
 									"type": "string"
 								}
 							]
@@ -1924,7 +1947,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmJkZTJhY2UyNzZmMDlkZmM4Y2E2ODMiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjYzOTIwNzIsImV4cCI6MTcyNjM5NTY3Mn0.b-egJHEk2yGRlRbr9DUIN1tL1mnIUwot6J2Rd10Los8",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmMzNDdmYmM1M2UyZDI0MzlmYjg4NjEiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MzAxMjY5ODQsImV4cCI6MTczMDEzMDU4NH0.0VpcNb83YLYtFGR1ly6aLCmcq_mI2KVmdGznMoRs3k8",
 									"type": "string"
 								}
 							]
@@ -1995,7 +2018,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmJkZTJmMGUyNzZmMDlkZmM4Y2E2OGUiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MjYzOTA4NjksImV4cCI6MTcyNjM5NDQ2OX0.A2EvcKCokVM_3MDISA3txG8au9Dni8DHo-7uGML5dKI",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmMzNDdmYmM1M2UyZDI0MzlmYjg4NjEiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MzAxMjY5ODQsImV4cCI6MTczMDEzMDU4NH0.0VpcNb83YLYtFGR1ly6aLCmcq_mI2KVmdGznMoRs3k8",
 									"type": "string"
 								}
 							]
@@ -2130,6 +2153,139 @@
 			]
 		},
 		{
+			"name": "Statistic",
+			"item": [
+				{
+					"name": "MonthlyRevenue",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmJkZTJhY2UyNzZmMDlkZmM4Y2E2ODMiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzAxMzAwMzIsImV4cCI6MTczMDEzMzYzMn0.YyaXYtQn1yS34zVmkeUemum3PpgfXC75XFHTwNH2k3w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "127.0.0.1:3001/statistics/monthly_revenue",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"statistics",
+								"monthly_revenue"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MonthlyOrderCount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmJkZTJhY2UyNzZmMDlkZmM4Y2E2ODMiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzAxMzAwMzIsImV4cCI6MTczMDEzMzYzMn0.YyaXYtQn1yS34zVmkeUemum3PpgfXC75XFHTwNH2k3w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "127.0.0.1:3001/statistics/monthly_order_count",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"statistics",
+								"monthly_order_count"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CurrentRevenue",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmJkZTJhY2UyNzZmMDlkZmM4Y2E2ODMiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzAxMzAwMzIsImV4cCI6MTczMDEzMzYzMn0.YyaXYtQn1yS34zVmkeUemum3PpgfXC75XFHTwNH2k3w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "127.0.0.1:3001/statistics/current_revenue",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"statistics",
+								"current_revenue"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CurrentOrderCount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmJkZTJhY2UyNzZmMDlkZmM4Y2E2ODMiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzAxMzAwMzIsImV4cCI6MTczMDEzMzYzMn0.YyaXYtQn1yS34zVmkeUemum3PpgfXC75XFHTwNH2k3w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "127.0.0.1:3001/statistics/current_order_count",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3001",
+							"path": [
+								"statistics",
+								"current_order_count"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Auth",
 			"item": [
 				{
@@ -2142,12 +2298,12 @@
 							"formdata": [
 								{
 									"key": "username",
-									"value": "nguyenvanabc",
+									"value": "nguyenvana",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "nguyenvanabc",
+									"value": "nguyenvana",
 									"type": "text"
 								}
 							]
