@@ -13,6 +13,7 @@ const districtRoute = require("./district.routes.js")
 const cartRoute = require("./cart.routes.js")
 const orderRoute = require("./order.routes.js")
 const statisticRoute = require("./statistic.routes.js")
+const reviewRoute = require("./review.routes.js")
 
 function route(app){
     app.use("/categories", categoryRoute);
@@ -30,6 +31,7 @@ function route(app){
     app.use("/orders", orderRoute);
     app.use("/statistics", statisticRoute);
     app.use("/", authRoute);
+    app.use('/reviews', reviewRoute);
     app.use("/", (req, res) => {
         return res.status(200).json({ message: 'Trang chủ API 111' });
     });
