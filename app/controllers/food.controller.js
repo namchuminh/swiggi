@@ -1,4 +1,6 @@
+const mongoose = require('mongoose');
 const Food = require("../models/food.model.js");
+const DetailOrder = require("../models/detail_orders.model.js");
 const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
@@ -22,11 +24,58 @@ class FoodController {
       // Tìm kiếm các món ăn theo tên (nếu có)
       const queryCondition = name ? { name: new RegExp(name, 'i') } : {};
 
-      const foods = await Food.find(queryCondition)
-        .limit(limitNum)
-        .skip((pageNum - 1) * limitNum)
-        .populate('category')
-        .exec();
+      const foods = await Food.aggregate([
+        // Lọc món ăn theo điều kiện queryCondition
+        { $match: queryCondition },
+      
+        // Kết nối với bảng detail_orders để lấy thông tin số lượng đã bán
+        {
+          $lookup: {
+            from: 'detail_orders', // Tên collection detail_orders
+            localField: '_id', // Trường liên kết trong bảng foods
+            foreignField: 'food', // Trường liên kết trong bảng detail_orders
+            as: 'orderDetails' // Đặt tên cho mảng kết quả lookup
+          }
+        },
+      
+        // Thêm trường tổng số lượng đã bán bằng cách tính tổng quantity
+        {
+          $addFields: {
+            sold: {
+              $sum: '$orderDetails.quantity'
+            }
+          }
+        },
+      
+        // Kết nối với bảng categories để lấy thông tin danh mục
+        {
+          $lookup: {
+            from: 'categories', // Tên collection categories
+            localField: 'category', // Trường liên kết trong bảng foods
+            foreignField: '_id', // Trường liên kết trong bảng categories
+            as: 'categoryDetails' // Đặt tên cho mảng kết quả lookup
+          }
+        },
+      
+        // Chuyển categoryDetails từ mảng thành object (nếu chỉ có một category)
+        {
+          $addFields: {
+            category: { $arrayElemAt: ['$categoryDetails', 0] }
+          }
+        },
+      
+        // Loại bỏ các trường không cần thiết
+        {
+          $project: {
+            orderDetails: 0, // Loại bỏ mảng orderDetails
+            categoryDetails: 0 // Loại bỏ mảng categoryDetails sau khi gán
+          }
+        },
+      
+        // Phân trang
+        { $skip: (pageNum - 1) * limitNum },
+        { $limit: limitNum }
+      ]);
 
       const count = await Food.countDocuments(queryCondition);
       const totalPages = Math.ceil(count / limitNum);
@@ -50,7 +99,25 @@ class FoodController {
       if (!food) {
         return res.status(404).json({ message: 'Không tìm thấy món ăn' });
       }
-      return res.json(food);
+
+      const sold = await DetailOrder.aggregate([
+        {
+          $match: { food: new mongoose.Types.ObjectId(req.params.id) } // Sử dụng 'new' để khởi tạo ObjectId
+        },
+        {
+          $group: {
+            _id: '$food',
+            totalSold: { $sum: '$quantity' }
+          }
+        }
+      ]);
+
+      
+      // Nếu không có đơn hàng nào liên quan, set totalSold = 0
+      const totalSold = sold.length > 0 ? sold[0].totalSold : 0;
+      const foodWithSold = { ...food.toObject(), sold: totalSold };
+      
+      return res.json({food: foodWithSold});
     } catch (error) {
       return res.status(500).json({ message: 'Lỗi khi truy xuất món ăn', error });
     }

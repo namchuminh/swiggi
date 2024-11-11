@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Category = require("../models/category.model.js");
 const Food = require("../models/food.model.js");
 const path = require('path');
@@ -181,15 +182,15 @@ class CategoryController {
     }
   }
 
-  //[GET] /categories/:id/foods
+  // [GET] /categories/:id/foods
   async getFoodByCategory(req, res) {
     try {
       const { page = 1, limit = 10 } = req.query;
-  
+
       // Kiểm tra và xử lý các giá trị của query parameters
       const pageNum = parseInt(page);
       const limitNum = parseInt(limit);
-  
+
       // Validate page và limit phải là số nguyên dương
       if (isNaN(pageNum) || pageNum < 1) {
         return res.status(400).json({ message: 'Trang phải là số nguyên dương' });
@@ -197,25 +198,55 @@ class CategoryController {
       if (isNaN(limitNum) || limitNum < 1) {
         return res.status(400).json({ message: 'Giới hạn phải là số nguyên dương' });
       }
-  
+
       // Tìm Category bằng ID
       const category = await Category.findById(req.params.id);
       if (!category) {
         return res.status(404).json({ message: 'Không tìm thấy danh mục' });
       }
-  
-      // Lấy tổng số món ăn trong danh mục
+
+      // Lấy danh sách món ăn với số lượng đã bán (tính sold) và phân trang
+      const foods = await Food.aggregate([
+        // Lọc món ăn theo danh mục
+        { $match: { category: new mongoose.Types.ObjectId(category._id) } },
+
+        // Kết nối với bảng detail_orders để tính số lượng đã bán
+        {
+          $lookup: {
+            from: 'detail_orders', // Tên collection detail_orders
+            localField: '_id', // Trường liên kết trong bảng foods
+            foreignField: 'food', // Trường liên kết trong bảng detail_orders
+            as: 'orderDetails' // Đặt tên cho mảng kết quả lookup
+          }
+        },
+
+        // Tính tổng số lượng đã bán
+        {
+          $addFields: {
+            sold: {
+              $sum: '$orderDetails.quantity'
+            }
+          }
+        },
+
+        // Bỏ mảng orderDetails để giữ dữ liệu gọn gàng
+        {
+          $project: {
+            orderDetails: 0
+          }
+        },
+
+        // Phân trang
+        { $skip: (pageNum - 1) * limitNum },
+        { $limit: limitNum }
+      ]);
+
+      // Tính tổng số món ăn trong danh mục
       const totalFoods = await Food.countDocuments({ category: category._id });
-  
-      // Lấy danh sách món ăn liên quan đến Category với phân trang
-      const foods = await Food.find({ category: category._id })
-        .limit(limitNum)
-        .skip((pageNum - 1) * limitNum)
-        .exec();
-  
+
       // Tính tổng số trang
       const totalPages = Math.ceil(totalFoods / limitNum);
-  
+
       // Kết quả trả về
       const result = {
         foods,
@@ -224,12 +255,13 @@ class CategoryController {
         next: pageNum < totalPages ? `/categories/${category._id}/foods?page=${pageNum + 1}&limit=${limitNum}` : null,
         prev: pageNum > 1 ? `/categories/${category._id}/foods?page=${pageNum - 1}&limit=${limitNum}` : null
       };
-  
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(500).json({ message: 'Lỗi khi lấy danh sách món ăn', error });
     }
   }
+
 }
 
 module.exports = new CategoryController();
