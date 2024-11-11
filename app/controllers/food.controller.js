@@ -95,7 +95,7 @@ class FoodController {
   // [GET] /foods/:id
   async show(req, res) {
     try {
-      const food = await Food.findById(req.params.id).populate('category');
+      let food = await Food.findById(req.params.id).populate('category');
       if (!food) {
         return res.status(404).json({ message: 'Không tìm thấy món ăn' });
       }
@@ -115,9 +115,9 @@ class FoodController {
       
       // Nếu không có đơn hàng nào liên quan, set totalSold = 0
       const totalSold = sold.length > 0 ? sold[0].totalSold : 0;
-      const foodWithSold = { ...food.toObject(), sold: totalSold };
+      food = { ...food.toObject(), sold: totalSold };
       
-      return res.json({food: foodWithSold});
+      return res.json(food);
     } catch (error) {
       return res.status(500).json({ message: 'Lỗi khi truy xuất món ăn', error });
     }
