@@ -142,6 +142,114 @@ class StatisticController {
             return res.status(500).json({ message: 'Error retrieving current order count', error });
         }
     }
+
+    //[GET] /statistics/percent
+    async percent(req, res) {
+        try {
+            // Sử dụng aggregation để đếm số lượng từng trạng thái
+            const orders = await Order.aggregate([
+                {
+                    $group: {
+                        _id: "$status", // Nhóm theo trạng thái
+                        count: { $sum: 1 }, // Đếm số lượng mỗi trạng thái
+                    },
+                },
+                {
+                    $project: {
+                        status: "$_id",
+                        count: 1,
+                        _id: 0,
+                    },
+                },
+            ]);
+        
+            // Lấy tổng số đơn hàng
+            const totalOrders = orders.reduce((acc, item) => acc + item.count, 0);
+        
+            // Tạo một đối tượng map để chuyển đổi status sang tiếng Việt
+            const statusTranslations = {
+                "Pending": "Chờ xử lý",
+                "Processing": "Đang xử lý",
+                "Completed": "Hoàn thành",
+                "Cancelled": "Đã hủy",
+            };
+        
+            // Tính phần trăm và chuyển đổi status sang tiếng Việt
+            const result = orders.map((item) => ({
+                status: statusTranslations[item.status] || item.status, // Chuyển sang tiếng Việt
+                percent: ((item.count / totalOrders) * 100).toFixed(2), // Làm tròn 2 chữ số
+            }));
+        
+            return res.status(200).json({ totalOrders, result });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+    }
+
+    //[GET] /statistics/revenue_day_of_month
+    async revenue_day_of_month(req, res) {
+        try {
+            // Lấy tháng từ query, nếu không có thì mặc định là tháng hiện tại
+            const month = req.query.month || new Date().getMonth() + 1; // MongoDB sử dụng tháng 0-11, do đó cộng thêm 1
+            const year = req.query.year || new Date().getFullYear(); // Lấy năm từ query, mặc định năm hiện tại
+    
+            // Tính ngày bắt đầu và kết thúc của tháng
+            const startDate = new Date(year, month - 1, 1); // Ngày 1 của tháng
+            const endDate = new Date(year, month, 0); // Ngày cuối của tháng
+    
+            // Lấy tổng doanh thu theo từng ngày trong tháng
+            const revenueByDay = await Order.aggregate([
+                {
+                    $match: {
+                        created_at: { // Lọc các đơn hàng trong tháng nhất định
+                            $gte: startDate,
+                            $lt: endDate,
+                        },
+                    },
+                },
+                {
+                    $group: {
+                        _id: { $dayOfMonth: "$created_at" }, // Nhóm theo ngày trong tháng
+                        totalRevenue: { $sum: "$amount" }, // Tổng doanh thu theo ngày
+                    },
+                },
+                {
+                    $sort: { _id: 1 }, // Sắp xếp theo thứ tự ngày trong tháng
+                },
+                {
+                    $project: {
+                        day: "$_id", // Đổi tên _id thành day
+                        totalRevenue: 1, // Giữ lại tổng doanh thu
+                        _id: 0, // Loại bỏ _id
+                    },
+                },
+            ]);
+    
+            // Tạo một mảng với tất cả các ngày trong tháng
+            const allDays = Array.from({ length: new Date(year, month, 0).getDate() }, (_, index) => index + 1);
+    
+            // Dựng lại dữ liệu với tất cả các ngày trong tháng, gán doanh thu là 0 nếu ngày đó không có dữ liệu
+            const revenueResult = allDays.map(day => {
+                const data = revenueByDay.find(item => item.day === day);
+                return {
+                    day,
+                    totalRevenue: data ? data.totalRevenue : 0, // Nếu không có dữ liệu, gán doanh thu là 0
+                };
+            });
+    
+            // Trả về kết quả
+            return res.status(200).json({
+                month,
+                year,
+                revenueByDay: revenueResult,
+            });
+    
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+    }
 }
 
 module.exports = new StatisticController();

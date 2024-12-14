@@ -2,7 +2,25 @@ const Order = require('../models/order.model');
 const DetailOrder = require('../models/detail_orders.model');
 const Cart = require('../models/cart.model');
 const Coupon = require('../models/coupon.model');
+const qs = require('qs');
+const crypto = require('crypto');
+const vnpayConfig = require('../config/vnpay');
 
+function sortObject(obj) {
+	let sorted = {};
+	let str = [];
+	let key;
+	for (key in obj){
+		if (obj.hasOwnProperty(key)) {
+		str.push(encodeURIComponent(key));
+		}
+	}
+	str.sort();
+    for (key = 0; key < str.length; key++) {
+        sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+    }
+    return sorted;
+}
 class OrderController {
     // [GET] /orders
     async index(req, res) {
@@ -51,7 +69,7 @@ class OrderController {
     // [POST] /orders/
     async create(req, res) {
         try {
-            const { address, phone, coupon } = req.body;
+            const { address, phone, coupon, ship = 8000, distance, timeShip, payment = "Cod" } = req.body;
 
             // Lấy giỏ hàng của người dùng
             const carts = await Cart.find({ user: req.user.userId }).populate('food').populate('toppings');
@@ -98,7 +116,11 @@ class OrderController {
                 phone,
                 amount: totalAmount,
                 coupon: couponCheck ? couponCheck._id : null,  // Lưu coupon nếu có
-                status: 'Pending'  // Trạng thái đơn hàng
+                status: 'Pending',  // Trạng thái đơn hàng
+                ship,
+                distance,
+                timeShip,
+                payment
             });
 
             // Lưu đơn hàng
@@ -223,6 +245,74 @@ class OrderController {
             return res.status(500).json({ message: 'Lỗi khi cập nhật trạng thái đơn hàng', error });
         }
     }
+
+    async vnpay(req, res) {
+        try {
+            const {coupon, ship, distance, timeShip, address, phone} = req.body;
+
+            var ipAddr = req.headers['x-forwarded-for'] ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress;
+    
+            var dateFormat = require('dateformat');
+        
+            
+            const { vnp_TmnCode, vnp_HashSecret, vnp_Url, vnp_ReturnUrl } = vnpayConfig;
+
+            var tmnCode = vnp_TmnCode;
+            var secretKey = vnp_HashSecret;
+            var vnpUrl = vnp_Url;
+            var returnUrl = `http://localhost:5173/checkout/?coupon=${coupon}&ship=${ship}&distance=${distance}&timeShip=${timeShip}&address=${address}&phone=${phone}`;
+        
+            var date = new Date();
+        
+            var createDate = dateFormat(date, 'yyyymmddHHmmss');
+            var orderId = dateFormat(date, 'HHmmss');
+            var amount = parseInt(req.body.amount) + parseInt(ship);
+            var bankCode = req.body.bankCode;
+            
+            var locale = req.body.language;
+            if(locale === null || locale === ''){
+                locale = 'vn';
+            }
+            var currCode = 'VND';
+            var vnp_Params = {};
+            vnp_Params['vnp_Version'] = '2.1.0';
+            vnp_Params['vnp_Command'] = 'pay';
+            vnp_Params['vnp_TmnCode'] = tmnCode;
+            // vnp_Params['vnp_Merchant'] = ''
+            vnp_Params['vnp_Locale'] = 'vn';
+            vnp_Params['vnp_CurrCode'] = currCode;
+            vnp_Params['vnp_TxnRef'] = orderId;
+            vnp_Params['vnp_OrderInfo'] = "thanh toan vnpay";
+            vnp_Params['vnp_OrderType'] = "order";
+            vnp_Params['vnp_Amount'] = amount * 100;
+            vnp_Params['vnp_ReturnUrl'] = returnUrl;
+            vnp_Params['vnp_IpAddr'] = ipAddr;
+            vnp_Params['vnp_CreateDate'] = createDate;
+            if(bankCode !== null && bankCode !== ''){
+                vnp_Params['vnp_BankCode'] = bankCode;
+            }
+        
+            vnp_Params = sortObject(vnp_Params);
+        
+            var querystring = require('qs');
+            var signData = querystring.stringify(vnp_Params, { encode: false });
+
+            var crypto = require("crypto");     
+            var hmac = crypto.createHmac("sha512", secretKey);
+            var signed = hmac.update(new Buffer.from(signData, 'utf-8')).digest("hex"); 
+            vnp_Params['vnp_SecureHash'] = signed;
+
+            vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });        
+            return res.status(200).json({ code: "00", message: "Success", data: vnpUrl });
+        } catch (error) {
+            console.error("VNPay Error:", error);
+            return res.status(500).json({ code: "99", message: "Internal Server Error" });
+        }
+    }
+
 }
 
 module.exports = new OrderController();

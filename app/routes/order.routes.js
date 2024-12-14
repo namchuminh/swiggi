@@ -7,6 +7,7 @@ router.patch('/:id/cancel', authenticateToken, orderController.cancel);
 router.patch('/:id/status', authenticateToken, requireAdmin, orderController.status);
 router.get('/:id', authenticateToken, orderController.show);
 router.post('/', authenticateToken, requireCustomer, orderController.create);
+router.post('/vnpay', authenticateToken, requireCustomer, orderController.vnpay);
 router.get('/', authenticateToken, orderController.index);
 
 
