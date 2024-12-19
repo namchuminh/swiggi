@@ -138,9 +138,31 @@ class FoodController {
         // Kiểm tra số lượng món ăn thuộc chuyên mục
         const foodCount = await Food.countDocuments({ category: category._id });
   
-        // Nếu có ít nhất 1 món ăn, lấy danh sách món ăn và thêm vào kết quả
+        // Nếu có ít nhất 1 món ăn, lấy danh sách món ăn (giới hạn 8) và thêm vào kết quả
         if (foodCount > 0) {
-          const foods = await Food.find({ category: category._id }).lean();
+          const foods = await Food.find({ category: category._id })
+            .limit(8) // Giới hạn số món ăn là 8
+            .lean();
+  
+          // Tính tổng số lượng đã bán cho từng món ăn
+          const foodIds = foods.map(food => food._id);
+          const soldData = await DetailOrder.aggregate([
+            {
+              $match: { food: { $in: foodIds } }
+            },
+            {
+              $group: {
+                _id: '$food',
+                totalSold: { $sum: '$quantity' }
+              }
+            }
+          ]);
+  
+          // Tạo một map để nhanh chóng tra cứu số lượng đã bán
+          const soldMap = soldData.reduce((map, item) => {
+            map[item._id.toString()] = item.totalSold;
+            return map;
+          }, {});
   
           result.push({
             _id: category._id,
@@ -161,6 +183,7 @@ class FoodController {
               show: food.show,
               created_at: food.created_at,
               updated_at: food.updated_at,
+              sold: soldMap[food._id.toString()] || 0, // Nếu không có sold, set mặc định là 0
             })),
           });
         }
