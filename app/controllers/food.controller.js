@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Food = require("../models/food.model.js");
+const Category = require('../models/category.model.js');
 const DetailOrder = require("../models/detail_orders.model.js");
 const path = require('path');
 const fs = require('fs');
@@ -120,6 +121,56 @@ class FoodController {
       return res.json(food);
     } catch (error) {
       return res.status(500).json({ message: 'Lỗi khi truy xuất món ăn', error });
+    }
+  }
+
+  // [GET] /foods/list_category
+  async listByCategory(req, res) {
+    try {
+      // Lấy tất cả chuyên mục
+      const categories = await Category.find().lean();
+  
+      // Khởi tạo mảng để lưu kết quả
+      const result = [];
+  
+      // Lặp qua từng chuyên mục
+      for (const category of categories) {
+        // Kiểm tra số lượng món ăn thuộc chuyên mục
+        const foodCount = await Food.countDocuments({ category: category._id });
+  
+        // Nếu có ít nhất 1 món ăn, lấy danh sách món ăn và thêm vào kết quả
+        if (foodCount > 0) {
+          const foods = await Food.find({ category: category._id }).lean();
+  
+          result.push({
+            _id: category._id,
+            name: category.name,
+            slug: category.slug,
+            image: category.image,
+            created_at: category.created_at,
+            updated_at: category.updated_at,
+            foods: foods.map(food => ({
+              _id: food._id,
+              name: food.name,
+              price: food.price,
+              description: food.description,
+              image: food.image,
+              slug: food.slug,
+              cooking_time: food.cooking_time,
+              type: food.type,
+              show: food.show,
+              created_at: food.created_at,
+              updated_at: food.updated_at,
+            })),
+          });
+        }
+      }
+  
+      // Trả về kết quả
+      res.status(200).json(result);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Lỗi khi truy xuất danh sách món ăn theo chuyên mục', error });
     }
   }
 

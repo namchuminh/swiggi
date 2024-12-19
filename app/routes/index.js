@@ -14,6 +14,7 @@ const cartRoute = require("./cart.routes.js")
 const orderRoute = require("./order.routes.js")
 const statisticRoute = require("./statistic.routes.js")
 const reviewRoute = require("./review.routes.js")
+const foodController = require('../controllers/food.controller.js');
 
 function route(app){
     app.use("/categories", categoryRoute);
@@ -32,6 +33,7 @@ function route(app){
     app.use("/statistics", statisticRoute);
     app.use("/", authRoute);
     app.use('/reviews', reviewRoute);
+    app.use('/list_category', foodController.listByCategory);
     app.use("/", (req, res) => {
         return res.status(200).json({ message: 'Trang chủ API 111' });
     });
