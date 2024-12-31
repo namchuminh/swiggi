@@ -99,6 +99,11 @@ class OrderController {
                     return res.status(400).json({ message: 'Mã giảm giá đã hết hạn' });
                 }
 
+                // Kiểm tra số lượng mã giảm giá còn lại
+                if (couponCheck.quantity <= 0) {
+                    return res.status(400).json({ message: 'Mã giảm giá đã hết số lượng' });
+                }
+
                 // Trừ giá trị mã giảm giá theo % vào tổng tiền
                 const discountAmount = totalAmount * (couponCheck.value / 100);
                 totalAmount -= discountAmount;
@@ -106,6 +111,10 @@ class OrderController {
                 if (totalAmount < 0) {
                     totalAmount = 0;
                 }
+
+                // Giảm số lượng mã giảm giá đi 1
+                couponCheck.quantity -= 1;
+                await couponCheck.save();
             }
 
             // Tạo đơn hàng mới
